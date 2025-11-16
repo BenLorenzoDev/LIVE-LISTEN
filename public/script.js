@@ -4,6 +4,38 @@ const sampleRate = 16000; // Hz
 let audioContext = null;
 let ws = null;
 
+// Auto-start listening if listenUrl is provided in the URL
+window.addEventListener('DOMContentLoaded', () => {
+  const params = new URLSearchParams(window.location.search);
+  const listenUrlFromQuery = params.get('listenUrl');
+
+  if (!listenUrlFromQuery) {
+    console.log('No listenUrl in query params, normal dialer mode.');
+    return;
+  }
+
+  console.log('Found listenUrl in query params:', listenUrlFromQuery);
+
+  // Optional: hide the dialer form when opened from Airtable button
+  const dialForm = document.getElementById('dial-form');
+  if (dialForm) {
+    dialForm.style.display = 'none';
+  }
+
+  // Optional: if you have an input for listen URL, pre-fill it
+  const listenInput = document.getElementById('listen-url-input');
+  if (listenInput) {
+    listenInput.value = listenUrlFromQuery;
+  }
+
+  // Start the audio stream
+  startAudio(listenUrlFromQuery).catch(err => {
+    console.error('Failed to start audio from listenUrl:', err);
+    alert('Could not start listening to the call. Check console logs.');
+  });
+});
+
+
 // Read listenUrl from query param (for Airtable "Listen" button)
 window.addEventListener("DOMContentLoaded", () => {
   const params = new URLSearchParams(window.location.search);
