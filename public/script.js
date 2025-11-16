@@ -1,7 +1,36 @@
-const serverUrl = "/"; // Base URL of your backend server
+const serverUrl = ""; // or "/"
+//const serverUrl = "/"; // Base URL of your backend server
 const sampleRate = 16000; // Hz
 let audioContext = null;
 let ws = null;
+
+// Read listenUrl from query param (for Airtable "Listen" button)
+window.addEventListener("DOMContentLoaded", () => {
+  const params = new URLSearchParams(window.location.search);
+  const listenUrlFromQuery = params.get("listenUrl");
+
+  if (listenUrlFromQuery) {
+    console.log("Found listenUrl in query:", listenUrlFromQuery);
+
+    // Optional: if you have a text input for listen URL, fill it
+    const listenInput = document.getElementById("listen-url-input");
+    if (listenInput) {
+      listenInput.value = listenUrlFromQuery;
+    }
+
+    // Optional: disable the dial form since we’re in "listen-only" mode
+    const dialForm = document.getElementById("dial-form");
+    if (dialForm) {
+      dialForm.style.display = "none";
+    }
+
+    // Start streaming audio
+    startAudio(listenUrlFromQuery).catch(err => {
+      console.error("Failed to start audio from query listenUrl:", err);
+      alert("Could not start listening to the call. Check console logs.");
+    });
+  }
+});
 
 async function startAudio(listenUrl) {
     if (ws) {
