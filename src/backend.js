@@ -1,5 +1,6 @@
 const axios = require("axios");
-const { apiKey, assistantId, apiBaseUrl } = require("./config");
+//const { apiKey, assistantId, apiBaseUrl } = require("./config");
+const { apiKey, assistantId, phoneNumberId, apiBaseUrl } = require("./config");
 
 // Function to poll the call status until the listenUrl becomes available
 async function pollCallStatus(callId) {
@@ -44,9 +45,10 @@ async function pollCallStatus(callId) {
 async function initiateCall(phoneNumber, customerName) {
   try {
     const payload = {
-      assistantId, // use the Assistant you created in Vapi
+      assistantId,      // which assistant to use
+      phoneNumberId,    // which phone number to call from
       customer: {
-        number: phoneNumber,
+        number: phoneNumber,    // E.164 like +1..
         name: customerName || "Unknown",
       },
     };
