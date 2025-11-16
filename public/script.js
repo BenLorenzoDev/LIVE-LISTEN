@@ -1,4 +1,4 @@
-const serverUrl = "http://localhost:8080"; // Base URL of your backend server
+const serverUrl = "/"; // Base URL of your backend server
 const sampleRate = 16000; // Hz
 let audioContext = null;
 let ws = null;
@@ -87,7 +87,7 @@ document.getElementById("callForm").addEventListener("submit", async (e) => {
     const customerName = document.getElementById("customerName").value;
 
     try {
-        const response = await fetch(`${serverUrl}/initiate-call`, {
+        const response = await fetch(`/initiate-call`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ phoneNumber, customerName }),
