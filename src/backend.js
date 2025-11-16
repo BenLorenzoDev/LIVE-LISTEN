@@ -1,5 +1,5 @@
 const axios = require("axios");
-const { apiKey, phoneNumberId, apiBaseUrl } = require("./config");
+const { apiKey, assistantId, apiBaseUrl } = require("./config");
 
 // Function to poll the call status until the listenUrl becomes available
 async function pollCallStatus(callId) {
@@ -18,7 +18,11 @@ async function pollCallStatus(callId) {
       console.log(`Polling attempt ${i + 1}: Status - ${callData.status}`);
 
       // Check if the listenUrl is available
-      if (callData.status === "in-progress" && callData.monitor && callData.monitor.listenUrl) {
+      if (
+        callData.status === "in-progress" &&
+        callData.monitor &&
+        callData.monitor.listenUrl
+      ) {
         console.log("Listen URL available:", callData.monitor.listenUrl);
         return callData.monitor.listenUrl;
       }
@@ -26,28 +30,24 @@ async function pollCallStatus(callId) {
       // Wait before retrying
       await new Promise((resolve) => setTimeout(resolve, delay));
     } catch (error) {
-      console.error("Error polling call status:", error.response?.data || error.message);
+      console.error(
+        "Error polling call status:",
+        error.response?.data || error.message
+      );
     }
   }
 
   throw new Error("Listen URL not available after polling.");
 }
 
-// Function to initiate an outbound call
+// Function to initiate an outbound call using a Vapi Assistant
 async function initiateCall(phoneNumber, customerName) {
   try {
     const payload = {
-      phoneNumberId,
+      assistantId, // use the Assistant you created in Vapi
       customer: {
         number: phoneNumber,
         name: customerName || "Unknown",
-      },
-      assistant: {
-        name: "AI ASSSISTANT",
-        voice: {
-          provider: "11labs",
-          voiceId: "p43fx6U8afP2xoq1Ai9f",
-        },
       },
     };
 
@@ -65,7 +65,10 @@ async function initiateCall(phoneNumber, customerName) {
     const listenUrl = await pollCallStatus(callId);
     return listenUrl;
   } catch (error) {
-    console.error("Error initiating call:", error.response?.data || error.message);
+    console.error(
+      "Error initiating call:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 }
@@ -79,7 +82,10 @@ async function controlCall(controlUrl, type, message) {
     });
     console.log("Message injected successfully:", response.data);
   } catch (error) {
-    console.error("Error controlling call:", error.response?.data || error.message);
+    console.error(
+      "Error controlling call:",
+      error.response?.data || error.message
+    );
     throw error;
   }
 }
